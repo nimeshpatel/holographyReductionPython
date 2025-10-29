@@ -1,0 +1,24 @@
+Input far field amplitude file name ....         rgin.dat
+Output far field amplitude file name ...         ampout.dat
+Output far field Phase file name .......         phaseout.dat
+Bore-sight data file name...............         bor128
+Size ninp of the input data file .......         128
+Size nout of the output data file.......         128
+Observing frequency (GHz)...............         94.5
+!Sampling interval (arcsecs).............         41.04
+Sampling interval (arcsecs).............         41.00
+reference plane of the main dish (m) ...         2.180
+!reference plane of the reference horn (m)        6.980
+reference plane of the reference horn (m)        7.74
+Do far-field taper (1) or not (0).......         0
+Do bore-sight drift correction (1/0)....         0
+Do interpolation (1) or not(0)..........         1
+Input units (engineering|counts)........         engineering
+vvm phase scaling (mv/deg)..............         -1.0
+vvm amplitude scaling (mv/v).............        1.0
+DC amplifier gain, phase channel .......         1.0
+DC amplifier gain, amplitude channel....         1.0
+ADC gain, phase channel (counts/mv).....         1.0
+ADC gain, amplitude channel (counts/mv).         1.0
+ADC offset, phase channel (counts)......         0.0
+ADC offset, amplitude channel (counts)..         0.0

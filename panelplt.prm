@@ -1,0 +1,39 @@
+!------ Input Parameter List for Panel Fitting -------------
+!   (Note: the input values always start at the 50th column)
+!
+Filename for panel vertex coordinates...         nodes.table
+Dimension of the phase data array.......         128 
+!
+!
+!--------------------   parameters of the panels   ------------
+!
+Radius of the first ring of nodes(m)....         0.375 
+Radius of the second ring of nodes(m)...         1.265 
+Radius of the third ring of nodes(m)....         1.820 
+Radius of the fourth ring of nodes(m)...         2.605
+Radius of the fifth ring of nodes(m)....         3.220
+Radius of the sixth ring of nodes(m)....         4.040 
+Radius of the seventh ring of nodes(m)..         4.780 
+Radius of the eighth ring of nodes(m)...         5.435 
+Radius of the ninth ring of nodes(m)....         6.0
+Number of panels in the first ring......         12
+Number of panels in the second ring.....         12
+Number of panels in the third ring......         24
+Number of panels in the fourth ring.....         24
+Number of panels in the fifth ring......         48 
+Number of panels in the sixth ring......         48 
+Number of panels in the seventh ring....         48 
+Number of panels in the eighth  ring....         48 
+!
+Dist. of screws to the edge of panels(m)         0.05
+!
+!-------------------   parameters of the telescope   ----------
+!
+Focal length of the primary mirror(m)..          4.8 
+Diameter of the primary mirror (m).....          12.0
+Diameter of the secondary mirror (m)...          0.75
+Nyquist sampling rate .................          0.75
+Radial margin on the edge of panel(m)..          0.01
+Theta margin on the edge of panel (rad)          0.004
+Theta margin on the edge of panel (rad)          0.004
+!Theta offsec from elevation axis (rad).         0.0 

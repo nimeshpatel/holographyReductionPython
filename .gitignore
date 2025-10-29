@@ -1,0 +1,34 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Data files
+*.dat
+*.txt
+!README*.txt
+*.obscon
+*.Ep
+
+# Output files
+*.pdf
+*.png
+
+# Log files
+*.log
+
+# Temporary files
+*~
+*.swp
+*.swo
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
+*.sublime-*
+
+# Claude
+.claude/

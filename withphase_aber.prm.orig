@@ -1,0 +1,54 @@
+!------ Input Parameter List for Withphase Algorithm -------------
+!   (Note: the input values always start at the 50th column)
+!   (Note: Real numbers must be writeen with a decimal point)
+!
+!---------------   parameters of the observations   -------------
+! for GLT Thule, 24 Oct 19, TK. includes aberration - 20 Feb 2020
+Far field amplitude file name ..........         ampout.dat
+Far field Phase file name ..............         phaseout.dat
+Aperture field amplitude file name .....         Ea.dat
+Aperture Field phase file name .........         Ep.dat
+Aperture Field residual phase file .....         Epr.dat
+Aperture Field umresidual phase file .....       Epr_um.dat
+Aperture Field um amp file ...............       Ea_um.dat
+Aperture Field um phase file .............       Ep_um.dat
+Size N of the N by N data file .........         128
+Nyquist sampling rate ..................         0.7521
+Range of the transmitter (meters) ......         2820.0 
+!Range of the transmitter (meters) ......         3095.0 
+Observing frequency (GHz)...............         94.5
+Sampling interval (arcsecs).............         41.04
+!
+!--------------------   parameters of the telescope   ------------
+!
+Diameter of primary (m) ................         12.0
+Diameter of secondary (m) ..............         0.75
+Focal length of primary	(m) ............         4.8 
+Magnification of the Cassegrain system .         20.0 
+Diffraction file or iondish file .......         diff512.dat                   
+!
+!---------------  parameters of the numerical scheme  -----------   
+!
+Number of Large Scale Fitting Parameters         8
+Near-field correction to be done?                1
+!Defocus correction amount (meters)               0.01018
+Defocus correction amount (meters)               0.0105
+!
+!------------------masking parameters----------------------------
+!
+Outer diameter for masking (primary edge)        11.9
+Inner diameter for masking (subreflector edge)   0.75
+5alf-width for quadrupod masking                 0.0375
+name of the output mask file                     mask32.dat
+!
+!----------------fitting options --------------------------------
+! 
+dc                                               1
+x                                                1
+y                                                1
+defocus                                          1
+astigmatism-45                                   0
+astigmatism                                      0
+coma-x                                           1
+coma-y                                           1
+!-----------------end--------------------------------------------
