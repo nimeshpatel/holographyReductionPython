@@ -5,4 +5,6 @@ python preprocess.py
 python holis_aber2.py 
 python unwrap.py 
 python holis_aber2.py --unwrap
-python gltDishMap.py Epr.dat --cmap coolwarm --vmin -180 --vmax 180
+cp Epr.dat $2_Epr.dat
+python gltDishMap.py $2_Epr.dat --cmap coolwarm --vmin -180 --vmax 180 
+python gltDishMap.py $2_Epr.dat --cmap coolwarm --vmin -180 --vmax 180 --output $2.pdf
