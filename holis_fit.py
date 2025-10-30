@@ -1,4 +1,8 @@
 """
+Nimesh Patel
+October 2025
+Python version of previous fortran/C code from Holis package.
+
 HOLIS_FIT.PY - Phase fitting operations for holography code
 
 This module contains functions for least-squares fitting of large-scale

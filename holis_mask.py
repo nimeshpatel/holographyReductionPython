@@ -1,4 +1,8 @@
 """
+Nimesh Patel
+October 2025
+Python version of previous fortran/C code from Holis package.
+
 HOLIS_MASK.PY - Masking operations for holography code
 
 This module contains functions for applying masks to aperture data,

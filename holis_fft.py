@@ -1,4 +1,8 @@
 """
+Nimesh Patel
+October 2025
+Python version of previous fortran/C code from Holis package.
+
 HOLIS_FFT.PY - FFT and field manipulation functions for holography code
 
 This module contains FFT operations, field transformations, and

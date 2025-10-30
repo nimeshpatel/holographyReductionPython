@@ -1,4 +1,8 @@
 """
+Nimesh Patel
+October 2025
+Python version of previous fortran/C code from Holis package.
+
 HOLIS_MISELL.PY - Misell algorithm operations for holography code
 
 This module contains functions specific to the Misell phase retrieval algorithm,

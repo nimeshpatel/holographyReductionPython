@@ -1,6 +1,9 @@
 # gltDishMap.py
 #
-# Nimesh Patel, original code from 2023-Mar-09
+# Nimesh Patel
+# October 2025
+# Python version of previous fortran/C code from Holis package.
+# Original code from 2023-Mar-09
 #
 # This is a modified version of Dick Plambeck's plot_surface.py code
 # for making a surface error map based on photogrammetry measurements.

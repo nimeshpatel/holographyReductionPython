@@ -1,4 +1,8 @@
 """
+Nimesh Patel
+October 2025
+Python version of previous fortran/C code from Holis package.
+
 HOLIS_IO.PY - Input/Output functions for holography code
 
 This module contains all file reading and writing functions for the

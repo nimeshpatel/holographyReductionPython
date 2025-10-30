@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
 """
+Nimesh Patel
+October 2025
+Python version of previous fortran/C code from Holis package.
+
 detect_raster_start_interactive_v3.py — final streamlined version
 
 Changes in v3:

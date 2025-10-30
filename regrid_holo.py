@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """
 Nimesh Patel
-27 October 2025
+October 2025
+Python version of previous fortran/C code from Holis package.
 
 Regrid raw on-the-fly holography scan data onto a regular grid.
 

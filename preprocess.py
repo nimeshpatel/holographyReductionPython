@@ -1,10 +1,19 @@
 #!/usr/bin/env python3
+"""
+Nimesh Patel
+October 2025
+Python version of previous fortran/C code from Holis package.
+
+PREPROCESS.PY - Data preprocessing for holography analysis
+Applies calibrations, corrections, and reference plane adjustments.
+"""
 from pathlib import Path
 import math, re
 import numpy as np
+from scipy import constants
 
-PI = math.pi
-CLIGHT = 2.99792e8  # m/s
+PI = constants.pi
+CLIGHT = constants.c  # Speed of light in m/s (exact value: 299792458.0)
 
 PARAM_ORDER_HINTS = [
     ("in_data", "file"),
@@ -199,10 +208,7 @@ def apply_bore_inplace(am, ph, ambore, phbore):
             am[i][j] = am[i][j] / (dr_am*j + ambore[i])
 
 def reference_inplace(ph, ninp, dist1, dist2, samp_itvl_arcsec, freq_ghz):
-    import math
-    CLIGHT = 2.99792e8
-    PI = 3.14159265358979
-
+    # Use module-level constants from scipy.constants
     freq = freq_ghz * 1.0e9
     alambda = CLIGHT / freq
     ncent = ninp // 2 + 1

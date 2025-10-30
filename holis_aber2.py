@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
 """
+Nimesh Patel
+October 2025
+Python version of previous fortran/C code from Holis package.
+
 HOLIS_ABER2.PY - Holography Aperture Field Calculation
 
 Calculates the aperture field of an antenna from the measured radiation patterns,
@@ -35,6 +39,7 @@ import sys
 import logging
 import argparse
 from typing import Tuple, Optional
+from scipy import constants
 
 # Import helper modules
 import holis_io
@@ -59,9 +64,9 @@ NMAX = 256
 NMAXSQ = NMAX * NMAX
 NFITMAX = 8  # Updated to 8 to match aber2 version (includes astigmatism and coma terms)
 
-# Physical constants
-PI = np.pi
-CLIGHT = 2.99792e8  # Speed of light in m/s
+# Physical constants from scipy.constants
+PI = constants.pi
+CLIGHT = constants.c  # Speed of light in m/s (exact value: 299792458.0)
 
 
 class HolisData:
