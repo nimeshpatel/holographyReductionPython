@@ -6,19 +6,29 @@ Python version of previous fortran/C code from Holis package.
 
 Regrid raw on-the-fly holography scan data onto a regular grid.
 
-This code bins irregularly sampled (el, az, amplitude, phase) data 
+This code bins irregularly sampled (el, az, amplitude, phase) data
 into a regular 2D grid, averaging samples that fall within each grid bin.
 Phase averaging is done using vector averaging to handle phase wrapping correctly.
 
 CORRECTED VERSION: This version fixes a bug in the original C code where amplitude
 was incorrectly computed from the last sample instead of the vector average.
 
-Usage: python regrid.py rawfile regrid.prm
+After regridding, displays three-panel inspection plots:
+  1. Azimuth vs Elevation (raster grid pattern)
+  2. Amplitude vs Azimuth
+  3. Amplitude vs Elevation
+
+Usage:
+  python regrid_holo.py rawfile regrid.prm           # Normal operation
+  python regrid_holo.py rawfile regrid.prm --debug   # With debug output
 """
 
 from pathlib import Path
 import math
 import sys
+import argparse
+import numpy as np
+import matplotlib.pyplot as plt
 
 
 def read_regrid_params(param_file: Path):
@@ -58,28 +68,29 @@ def read_regrid_params(param_file: Path):
     return params
 
 
-def regrid_data(rawfile: Path, param_file: Path, outfile: Path):
+def regrid_data(rawfile: Path, param_file: Path, outfile: Path, debug: bool = False):
     """
     Regrid on-the-fly scan data onto a regular grid.
-    
+
     The algorithm:
     1. For each elevation row, calculate azimuth step (corrected for elevation)
     2. For each azimuth bin, collect all data points within threshold
     3. Average amplitude and phase using complex vector averaging
     4. Handle missing bins by interpolation or setting to zero
-    
+
     Complex vector averaging:
     - Convert each (amp, phase) to complex: z = amp * exp(i*phase)
     - Average the complex values: z_avg = mean(z)
     - Extract: amp_avg = |z_avg|, phase_avg = arg(z_avg)
-    
+
     This properly handles phase wrapping and gives the correct amplitude
     of the averaged complex signal.
-    
+
     Args:
         rawfile: Input file with columns: el az amplitude phase
         param_file: Parameter file with grid specifications
         outfile: Output file for regridded data (j k amplitude phase)
+        debug: If True, print detailed diagnostic messages
     """
     params = read_regrid_params(param_file)
     
@@ -206,15 +217,19 @@ def regrid_data(rawfile: Path, param_file: Path, outfile: Path):
                             amp_grd[j][k] = 0.0
                             ph_grd[j][k] = 0.0
                             ph = 0.0
-                            print(f" :00 {line_num} {i} {j} {k} {el:.6f} {azgrd:.6f} {amp_grd[j][k]:.6f} {ph:.6f}")
+                            if debug:
+                                print(f" :00 {line_num} {i} {j} {k} {el:.6f} {azgrd:.6f} {amp_grd[j][k]:.6f} {ph:.6f}")
                         else:
                             if flag == 1:
                                 # Two successive bins without data
-                                print(f"two successive points without data, using prev. values")
+                                if debug:
+                                    print(f"two successive points without data, using prev. values")
                                 ph = 0.0
-                                print(f" :prev {line_num} {i} {j} {k-1} {el:.6f} {azgrd:.6f} {amp_grd[j][k-2]:.6f} {ph:.6f}")
+                                if debug:
+                                    print(f" :prev {line_num} {i} {j} {k-1} {el:.6f} {azgrd:.6f} {amp_grd[j][k-2]:.6f} {ph:.6f}")
                                 ph = 0.0
-                                print(f" :prev {line_num} {i} {j} {k} {el:.6f} {azgrd:.6f} {amp_grd[j][k-2]:.6f} {ph:.6f}")
+                                if debug:
+                                    print(f" :prev {line_num} {i} {j} {k} {el:.6f} {azgrd:.6f} {amp_grd[j][k-2]:.6f} {ph:.6f}")
                                 flag = 0
                             else:
                                 flag = 1
@@ -230,11 +245,13 @@ def regrid_data(rawfile: Path, param_file: Path, outfile: Path):
                             ph_grd[j][k-1] = (ph_grd[j][k-2] + ph_grd[j][k]) / 2.0
                             ph = ph_grd[j][k-1]
                             amp_grd[j][k-1] = (amp_grd[j][k-2] + amp_grd[j][k]) / 2.0
-                            print(f" :intr {line_num} {i} {j} {k-1} {el:.6f} {azgrd:.6f} {amp_grd[j][k-1]:.6f} {ph:.6f}")
+                            if debug:
+                                print(f" :intr {line_num} {i} {j} {k-1} {el:.6f} {azgrd:.6f} {amp_grd[j][k-1]:.6f} {ph:.6f}")
                             flag = 0
-                        
+
                         ph = ph_grd[j][k]
-                        print(f" : {line_num} {i} {j} {k} {el:.6f} {azgrd:.6f} {amp_grd[j][k]:.6f} {ph:.6f}")
+                        if debug:
+                            print(f" : {line_num} {i} {j} {k} {el:.6f} {azgrd:.6f} {amp_grd[j][k]:.6f} {ph:.6f}")
                         fout.write(f"{j} {k} {amp_grd[j][k]:.16e} {ph:.16e}\n")
                     
                     # Move to next azimuth bin
@@ -265,37 +282,127 @@ def regrid_data(rawfile: Path, param_file: Path, outfile: Path):
     
     fin.close()
     fout.close()
-    
+
     print(f"\nRegridding complete. Output written to {outfile}")
     print(f"Grid dimensions: {nel} × {naz}")
     print(f"Processed {line_num} data points")
     print(f"\nNote: This version uses corrected complex vector averaging.")
     print(f"Amplitude values will differ from the original C code which had a bug.")
 
+    return params
+
+
+def plot_regridded_data(outfile: Path, params: dict):
+    """
+    Create inspection plots of the regridded data.
+
+    Three-panel plot showing:
+    1. Azimuth vs Elevation (raster grid pattern)
+    2. Amplitude vs Azimuth
+    3. Amplitude vs Elevation
+
+    Args:
+        outfile: Path to regridded output file (j k amplitude phase)
+        params: Dictionary with grid parameters
+    """
+    print("\nGenerating inspection plots...")
+
+    # Read the regridded data
+    data = np.loadtxt(outfile)
+    if len(data) == 0:
+        print("Warning: No data to plot")
+        return
+
+    j_idx = data[:, 0].astype(int)  # Elevation grid index
+    k_idx = data[:, 1].astype(int)  # Azimuth grid index
+    amp = data[:, 2]
+    phase = data[:, 3]
+
+    # Convert grid indices to actual coordinates
+    azstrt = params['azstrt']
+    elstrt = params['elstrt']
+    azstep0 = params['azstep0']
+    elstep = params['elstep']
+
+    # Reconstruct az/el coordinates from grid indices
+    el = elstrt + j_idx * elstep
+
+    # For azimuth, account for elevation-dependent step size
+    pi = math.pi
+    az = np.zeros_like(el)
+    for i in range(len(j_idx)):
+        azstep = azstep0 / math.cos(el[i] * pi / 180.0)
+        az[i] = azstrt - k_idx[i] * azstep  # Note: azimuth decreases with k
+
+    # Create three-panel plot
+    fig, axs = plt.subplots(3, 1, figsize=(6, 8))
+
+    # Panel 1: Azimuth vs Elevation (raster grid)
+    axs[0].scatter(az, el, s=1.0, c='blue', alpha=0.6)
+    axs[0].set_xlabel("Azimuth (degrees)")
+    axs[0].set_ylabel("Elevation (degrees)")
+    axs[0].set_title("Regridded Map")
+    axs[0].set_aspect("equal", adjustable="box")
+    axs[0].grid(True, alpha=0.3)
+
+    # Panel 2: Amplitude vs Azimuth
+    axs[1].scatter(az, amp, s=1.0, c='green', alpha=0.6)
+    axs[1].set_xlabel("Azimuth (degrees)")
+    axs[1].set_ylabel("Amplitude")
+    axs[1].set_title("Amplitude vs Azimuth")
+    axs[1].grid(True, alpha=0.3)
+
+    # Panel 3: Amplitude vs Elevation
+    axs[2].scatter(el, amp, s=1.0, c='red', alpha=0.6)
+    axs[2].set_xlabel("Elevation (degrees)")
+    axs[2].set_ylabel("Amplitude")
+    axs[2].set_title("Amplitude vs Elevation")
+    axs[2].grid(True, alpha=0.3)
+
+    plt.tight_layout()
+    plt.show()
+    print("Inspection plots displayed.")
+
 
 def main():
-    if len(sys.argv) < 3:
-        print("Usage: python regrid.py rawfile regrid.prm")
-        print("  rawfile: Input file with columns (el az amplitude phase)")
-        print("  regrid.prm: Parameter file with grid specifications")
-        sys.exit(1)
-    
-    rawfile = Path(sys.argv[1])
-    param_file = Path(sys.argv[2])
+    parser = argparse.ArgumentParser(
+        description='Regrid holography scan data onto a regular grid.',
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Examples:
+  %(prog)s trimmed.txt regrid.prm           # Normal operation
+  %(prog)s trimmed.txt regrid.prm --debug   # With debug output
+        """
+    )
+    parser.add_argument('rawfile', type=str,
+                        help='Input file with columns: az el amplitude phase')
+    parser.add_argument('paramfile', type=str,
+                        help='Parameter file with grid specifications')
+    parser.add_argument('-d', '--debug', action='store_true',
+                        help='Enable debug output (detailed diagnostic messages)')
+
+    args = parser.parse_args()
+
+    rawfile = Path(args.rawfile)
+    param_file = Path(args.paramfile)
     outfile = Path("rgin.dat")
-    
-    print(f"Regridding: {sys.argv[0]} {rawfile} {param_file}")
+
+    print(f"Regridding: {rawfile} {param_file}")
     print(f"Using CORRECTED complex vector averaging (fixes C code bug)\n")
-    
+
     if not rawfile.exists():
         print(f"Error: Raw data file '{rawfile}' not found")
         sys.exit(1)
-    
+
     if not param_file.exists():
         print(f"Error: Parameter file '{param_file}' not found")
         sys.exit(1)
-    
-    regrid_data(rawfile, param_file, outfile)
+
+    # Perform regridding
+    params = regrid_data(rawfile, param_file, outfile, debug=args.debug)
+
+    # Display inspection plots of regridded data
+    plot_regridded_data(outfile, params)
 
 
 if __name__ == '__main__':
