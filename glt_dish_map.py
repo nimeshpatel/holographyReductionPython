@@ -32,7 +32,7 @@
 #  --output OUTPUT  Save figure to this PDF file
 #  --vmin VMIN      Minimum value for color scale (in microns)
 #  --vmax VMAX      Maximum value for color scale (in microns)
-#  --cmap CMAP      Color table (use seismic, bwr, or similar with opposite  colors around 0).
+#  --cmap CMAP      Color table (default: coolwarm; can use seismic, bwr, or similar).
 #  --label LABEL    Text for color wedge
 #  --holo-smooth    nearest , bilinear (default), bicubic 
 #  --holo-filterrad 0.8 (default 1)
@@ -213,7 +213,7 @@ def main():
     parser.add_argument("--output", help="Save figure to this PDF file")
     parser.add_argument("--vmin", type=float, help="Minimum value for color scale (in microns)")
     parser.add_argument("--vmax", type=float, help="Maximum value for color scale (in microns)")
-    parser.add_argument("--cmap",  help="Color table ")
+    parser.add_argument("--cmap", default="coolwarm", help="Color table (default: coolwarm)")
     parser.add_argument("--label",  help="Text for color wedge ")
     parser.add_argument("--pg-recenter", choices=["none", "mean", "median"], default="median",
                 help="How to recenter photogrammetry x,y before interpolation (default: median).")
