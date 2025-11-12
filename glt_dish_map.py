@@ -248,7 +248,13 @@ def main():
     rmin, rmax, npanels = parse_panel_geometry("panelplt.prm")
     draw_panel_boundaries(ax, rmin, rmax, npanels)
 
-    ax.set_title(args.filename)
+    # Calculate and display RMS for photogrammetry data
+    title_text = args.filename
+    if not is_grid_data:
+        rms_error = numpy.std(error)
+        title_text += f'\nRMS = {rms_error:.1f} μm'
+    
+    ax.set_title(title_text)
     ax.set_xlabel("X [mm]")
     ax.set_ylabel("Y [mm]")
     ax.set_xlim(-6100, 6100)
