@@ -1,0 +1,88 @@
+#!/bin/bash
+# Pipeline script for holography maps reduction
+# Nimesh Patel
+# 29 October 2025
+#
+# 4 May 2026
+# This version is for 32x32 map.
+#
+# Usage: ./holoMap.sh <input_file.txt>
+# The output file prefix is automatically derived from the input filename.
+#
+# To be run on gltobscon, under holo/holoReducePy area.
+# If you want to run this on another machine, copy over
+# all the .py codes, .prm and diff512.dat files (and this script).
+# 
+
+set -e  # Exit immediately if any command fails
+set -x  # Print commands as they execute
+
+# Activate the nimesh_holo environment (has all the needed packages)
+#source ~/locutus/mambaforge/bin/activate_mamba nimesh_holo
+source $HOME/.mamba_rc
+mamba activate nimesh_holo
+
+# Extract prefix from input filename (remove .txt extension)
+INPUTFILE="$1"
+PREFIX=$(basename "$INPUTFILE" .txt)
+
+# Create results directory if it doesn't exist
+mkdir -p results
+echo "Results will be saved to the 'results' subdirectory."
+
+echo "Starting with the first line detection of start of the map,"
+echo "and writing out trimmed.txt file, deleting all the earlier lines."
+
+python detect_raster_start.py $1 -o trimmed.txt
+
+echo "Regridding data to a 128 x 128 map..."
+python regrid_holo.py trimmed.txt regrid_32x32.prm
+
+echo "Preprocessing..."
+python preprocess.py
+
+echo "Fourier transform...running holis..."
+python holis_aber2.py
+
+echo "Unwrapping phase..."
+python unwrap.py
+
+echo "Fourier transform...repeating holis..."
+python holis_aber2.py --unwrap
+
+echo "Copying relevant output files to results directory..."
+cp ampout.dat results/$PREFIX.ampout
+cp phaseout.dat results/$PREFIX.phaseout
+cp rgin.dat results/$PREFIX.rgrd
+cp Epr.dat results/${PREFIX}_Epr.dat
+cp holis.log results/$PREFIX.log
+cp Ep_um.dat results/$PREFIX.Ep_um.dat
+cp Ea_um.dat results/$PREFIX.Ea_um.dat
+
+echo "Generating illumination map..."
+python glt_dish_map.py results/$PREFIX.Ea_um.dat --x-shift -65 --y-shift 65
+python glt_dish_map.py results/$PREFIX.Ea_um.dat --x-shift -65 --y-shift 65 --output results/${PREFIX}_illumination.pdf
+
+echo "Generating phase residual map..."
+python glt_dish_map.py results/${PREFIX}_Epr.dat --vmin -180 --vmax 180 --x-shift -65 --y-shift 65
+python glt_dish_map.py results/${PREFIX}_Epr.dat --vmin -180 --vmax 180 --x-shift -65 --y-shift 65 --output results/$PREFIX.pdf
+
+echo "Holography data reduction completed."
+echo "Phase residual map saved to results/$PREFIX.pdf"
+echo "Illumination map saved to results/${PREFIX}_illumination.pdf"
+
+# Prompt for user comments
+echo ""
+read -p "Any comments to add on the summary page? (press Enter to skip): " user_comment
+
+# Generate summary PDF
+echo ""
+echo "Generating summary PDF..."
+if [ -z "$user_comment" ]; then
+    python create_summary_pdf.py "$1" "results/${PREFIX}"
+else
+    python create_summary_pdf.py "$1" "results/${PREFIX}" --comment "$user_comment"
+fi
+
+echo ""
+echo "Summary PDF saved to results/${PREFIX}_summary.pdf"

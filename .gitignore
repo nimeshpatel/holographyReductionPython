@@ -1,0 +1,15 @@
+# Output data files
+*.dat
+*.log
+*.tar
+*.gz
+*.png
+
+# Raw holography data
+holoADC*.txt
+trimmed.txt
+regridedData.txt
+
+# Results directories
+results/
+gltResultsPDFs/
